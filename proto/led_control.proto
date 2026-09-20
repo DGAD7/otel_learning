@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package ledcontrol;
+option go_package = "ui/grpc/generated";
+
+message SetLedRequest {
+  bool on = 1;
+}
+
+message SetLedResponse {
+  bool on = 1;
+  uint64 total_times_switch_on = 2;
+}
+
+service LedControl {
+    rpc SetLed(SetLedRequest) returns (SetLedResponse);
+}
