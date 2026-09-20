@@ -18,3 +18,9 @@ brew install protobuf grpc
 brew install docker-compose
 brew install colima (macos)
 ```
+
+## Components
+- [UI (Go)](ui/README.md)
+- [Controller (C++)](control/README.md)
+- [Collector](collector/README.md)
+
