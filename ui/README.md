@@ -13,6 +13,8 @@ On other platforms, download the installer from https://go.dev/dl/.
 go install github.com/air-verse/air@latest
 ```
 
+search for packages in https://pkg.go.dev
+
 ### How to run the UI
 * To the UI navigate to `UI/` folder and run `air` . Alternatively execute `go run`
 * More about Golang in this [link](https://go.dev/)

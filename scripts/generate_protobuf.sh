@@ -10,6 +10,10 @@ PROTO_FILES="proto/*.proto"
 
 cd "$ROOT_PATH"
 
+# install all the required tools such as protoc-gen-grpc required for this script to work
+GOBIN="$ROOT_PATH/.bin" go -C ui install tool
+export PATH="$ROOT_PATH/.bin:$PATH"
+
 CPP_OUT="$ROOT_PATH"/control/grpc/generated
 mkdir -p "$CPP_OUT" ui/grpc/generated
 

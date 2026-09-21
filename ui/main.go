@@ -6,5 +6,5 @@ import (
 
 func main() {
 
-	fmt.Println("This is hte UI of the OTEL learning projects. This provides the UI for the led project")
+	fmt.Println("This is the UI of the OTEL learning projects. This provides the UI for the led project")
 }
