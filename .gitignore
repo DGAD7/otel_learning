@@ -1,2 +1,4 @@
 ui/tmp/
 build/
+.bin/
+tmp/
