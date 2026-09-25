@@ -1,8 +1,16 @@
 
+#include "led_control.h"
 #include "led/led.h"
 
-namespace led {
+#include <memory>
+#include <utility>
 
-bool led::set_state(bool state) { return true; }
+namespace led_control
+{
 
-} // namespace led
+led_control::led_control(std::shared_ptr<led::led> led)
+    : m_led{std::move(led)}
+{
+}
+
+} // namespace led_control

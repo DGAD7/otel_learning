@@ -2,3 +2,7 @@ ui/tmp/
 build/
 .bin/
 tmp/
+
+
+.clangd
+.clang-format
