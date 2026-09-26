@@ -1,7 +1,15 @@
 #include "led.h"
 
-namespace led {
+namespace led
+{
 
-bool led::set_state(bool state) { return true; }
+bool led::set_state(bool state)
+{
+    if (state)
+    {
+        return true;
+    }
+    return false;
+}
 
 } // namespace led
