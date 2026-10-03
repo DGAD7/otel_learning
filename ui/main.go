@@ -12,6 +12,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -50,6 +51,8 @@ func main() {
 	logger := getLogger("main")
 	logger.Info("This is the UI of the OTEL learning projects. This provides the UI for the led project")
 
+	tracer := getTracer("main")
+
 	ledControlAddress := envOrDefault("LED_CONTROL_ADDRESS", "localhost:50051")
 	client, closeConn, err := dialLedControl(ledControlAddress)
 
@@ -69,15 +72,21 @@ func main() {
 
 	led = newLedButton(func() {
 
+		tapCtx, span := tracer.Start(ctx, "let button tap")
+		defer span.End()
+
 		requestedState := !ledOn
-		resp, err := client.SetLed(ctx, &grpcService.SetLedRequest{On: requestedState})
+		span.SetAttributes(attribute.Bool("led.requestedState", requestedState))
+		resp, err := client.SetLed(tapCtx, &grpcService.SetLedRequest{On: requestedState})
 
 		if err != nil {
 
 			statusLabel.SetText(fmt.Sprintf("error calling led_control: %v", err))
+			logger.ErrorContext(tapCtx, "error calling led_control gRPC service", "error", err)
 			return
 		}
 		ledOn = resp.GetOn()
+		logger.InfoContext(tapCtx, "LED state changed", "on", ledOn)
 
 		led.SetOn(ledOn)
 		if ledOn {

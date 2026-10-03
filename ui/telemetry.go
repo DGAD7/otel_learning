@@ -11,8 +11,12 @@ import (
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
 	sdklog "go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type lineExporter struct {
@@ -70,4 +74,37 @@ func initLogging(ctx context.Context) (func(context.Context) error, error) {
 	slog.SetDefault(otelslog.NewLogger("led-ui"))
 	return provider.Shutdown, nil
 
+}
+
+func initTracing(ctx context.Context) (func(context.Context) error, error) {
+
+	res, err := resource.New(ctx,
+		resource.WithTelemetrySDK(),
+		resource.WithAttributes(attribute.String("service.name", "led-ui")),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	opts := []sdktrace.TracerProviderOption{sdktrace.WithResource(res)}
+
+	if os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT") != "" {
+		exporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithInsecure())
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, sdktrace.WithBatcher(exporter))
+
+	}
+
+	provider := sdktrace.NewTracerProvider(opts...)
+	otel.SetTracerProvider(provider)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+	return provider.Shutdown, nil
+
+}
+
+func getTracer(name string) trace.Tracer {
+	return otel.Tracer(name)
 }
