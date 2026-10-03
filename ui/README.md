@@ -18,3 +18,7 @@ search for packages in https://pkg.go.dev
 ### How to run the UI
 * To the UI navigate to `UI/` folder and run `air` . Alternatively execute `go run`
 * More about Golang in this [link](https://go.dev/)
+
+### OpenTelemetry SDK
+Read more about setting up OTEL for Golan in the link below
+https://opentelemetry.io/docs/languages/go/getting-started/

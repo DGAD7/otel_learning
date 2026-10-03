@@ -38,8 +38,17 @@ func envOrDefault(name, defaultValue string) string {
 
 func main() {
 
-	fmt.Println("This is the UI of the OTEL learning projects. This provides the UI for the led project")
 	ctx := context.Background()
+
+	shutdownLogging, err := initLogging(ctx)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to init otel logging: %v\n", err)
+		os.Exit(1)
+	}
+	defer shutdownLogging(context.Background())
+
+	logger := getLogger("main")
+	logger.Info("This is the UI of the OTEL learning projects. This provides the UI for the led project")
 
 	ledControlAddress := envOrDefault("LED_CONTROL_ADDRESS", "localhost:50051")
 	client, closeConn, err := dialLedControl(ledControlAddress)
