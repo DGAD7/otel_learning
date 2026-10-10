@@ -15,12 +15,15 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 )
 
 func dialLedControl(target string) (grpcService.LedControlClient, func() error, error) {
 
 	conn, err := grpc.NewClient(target,
-		grpc.WithTransportCredentials(insecure.NewCredentials()))
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("dialing led_control at %s: %w", target, err)
@@ -40,6 +43,13 @@ func envOrDefault(name, defaultValue string) string {
 func main() {
 
 	ctx := context.Background()
+
+	shutdownTracing, err := initTracing(ctx)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to init otel tracing: %v\n", err)
+		os.Exit(1)
+	}
+	defer shutdownTracing(context.Background())
 
 	shutdownLogging, err := initLogging(ctx)
 	if err != nil {
