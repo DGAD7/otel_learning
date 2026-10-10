@@ -3,14 +3,15 @@
 
 #include "grpcpp/grpcpp.h"
 #include "grpcpp/security/server_credentials.h"
+#include "opentelemetry/common/key_value_iterable_view.h"
+#include "opentelemetry/version.h"
+#include "telemetry/logging.h"
 
 #include <atomic>
 #include <chrono>
 #include <csignal>
 #include <cstdlib>
-#include <iostream>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <thread>
 
@@ -36,7 +37,11 @@ void handle_shutdown_request(int /*signal*/)
 
 int main()
 {
-    std::cout << "Hello OTEL" << std::endl;
+    control::telemetry::init_logging();
+    auto logger = control::telemetry::get_logger("main");
+
+    logger->Info("Hello OTEL");
+    logger->Info("OTEL Version", opentelemetry::common::MakeAttributes({{"OTEL_VERSION", OPENTELEMETRY_VERSION}}));
 
     const auto led = std::make_shared<led::led>();
 
