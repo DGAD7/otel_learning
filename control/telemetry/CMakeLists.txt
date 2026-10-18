@@ -1,6 +1,7 @@
 set(LIB telemetry)
 
 add_library(${LIB}
+	custom_exporter.cpp
 	logging.cpp
 )
 
@@ -16,4 +17,5 @@ PUBLIC
 PRIVATE
 	opentelemetry_logs
 	opentelemetry_exporter_ostream_logs
+	opentelemetry_exporter_otlp_grpc_log
 )

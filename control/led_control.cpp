@@ -5,11 +5,26 @@
 
 #include "grpcpp/server_context.h"
 #include "grpcpp/support/status.h"
+#include "opentelemetry/logs/logger.h"
+#include "opentelemetry/nostd/shared_ptr.h"
+#include "telemetry/logging.h"
 
 #include <exception>
 #include <grpcpp/support/status.h>
 #include <memory>
 #include <utility>
+
+namespace
+{
+
+using control::telemetry::With;
+
+inline opentelemetry::nostd::shared_ptr<opentelemetry::logs::Logger> logger()
+{
+    return control::telemetry::get_logger("led_control");
+}
+
+}
 
 namespace led_control
 {
@@ -27,11 +42,13 @@ grpc::Status led_control::SetLed(grpc::ServerContext *,
     {
         const auto new_state = m_led->set_state(request->on());
         response->set_on(new_state);
+        logger()->Info("change the state of LED", With({{"new state", request->on()}}));
         return grpc::Status::OK;
     }
     catch (const std::exception &)
     {
         return grpc::Status::CANCELLED;
+        logger()->Error("failed to change led state");
     }
 }
 
