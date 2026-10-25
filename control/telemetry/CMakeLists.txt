@@ -18,4 +18,7 @@ PRIVATE
 	opentelemetry_logs
 	opentelemetry_exporter_ostream_logs
 	opentelemetry_exporter_otlp_grpc_log
+
+	opentelemetry_trace
+	opentelemetry_exporter_otlp_grpc
 )

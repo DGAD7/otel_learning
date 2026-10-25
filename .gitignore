@@ -1,5 +1,6 @@
 ui/tmp/
 build/
+build-pi/
 .bin/
 tmp/
 

@@ -2,7 +2,7 @@ if(APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "27.0" CACHE STRING "Minimum macOS version")
 endif()
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.18)
 project(otel_learning)
 
 set(CMAKE_CXX_STANDARD 20)

@@ -19,10 +19,10 @@ mkdir -p "$CPP_OUT" ui/grpc/generated
 
 PROTOC=$(which protoc)
 # Generate for controller
-$PROTOC -I=./proto \
-	--cpp_out=$CPP_OUT \
-	--grpc_out=$CPP_OUT --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) \
-	$PROTO_FILES
+# $PROTOC -I=./proto \
+# 	--cpp_out=$CPP_OUT \
+# 	--grpc_out=$CPP_OUT --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) \
+# 	$PROTO_FILES
 
 # Generate for UI
 $PROTOC -I=./proto \

@@ -1,5 +1,6 @@
 #include "telemetry/logging.h"
 #include "telemetry/custom_exporter.h"
+#include "telemetry/otlp.h"
 
 #include "opentelemetry/exporters/otlp/otlp_grpc_log_record_exporter_factory.h"
 #include "opentelemetry/exporters/otlp/otlp_grpc_log_record_exporter_options.h"
@@ -26,13 +27,6 @@ namespace
 {
 
 std::shared_ptr<logs_sdk::LoggerProvider> g_provider;
-constexpr const char *otlp_endpoint_env = "OTEL_EXPORTER_OTLP_ENDPOINT";
-
-bool otlp_enabled()
-{
-    const char *value = std::getenv(otlp_endpoint_env);
-    return value != nullptr && *value != '\0';
-}
 
 }
 
