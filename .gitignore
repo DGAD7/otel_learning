@@ -1,6 +1,8 @@
 ui/tmp/
 build/
 build-pi/
+vcpkg_installed/
+.vcpkg-cache/
 .bin/
 tmp/
 
