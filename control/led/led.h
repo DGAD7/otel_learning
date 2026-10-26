@@ -1,13 +1,40 @@
 #pragma once
 
-namespace led {
+#include <memory>
 
-class led {
+namespace led
+{
 
-public:
-  bool set_state(bool);
+enum class polarity_t
+{
+    active_high,
+    active_low,
+};
 
-private:
+enum class state_t
+{
+    active,
+    inactive,
+};
+
+struct led_config
+{
+        int line;
+        int chip;
+        polarity_t polarity;
+};
+
+class led
+{
+
+    public:
+        explicit led(led_config);
+        ~led();
+        void set_state(bool);
+
+    private:
+        class impl;
+        std::unique_ptr<impl> m_impl;
 };
 
 } // namespace led

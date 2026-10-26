@@ -40,15 +40,15 @@ grpc::Status led_control::SetLed(grpc::ServerContext *,
 {
     try
     {
-        const auto new_state = m_led->set_state(request->on());
-        response->set_on(new_state);
+        m_led->set_state(request->on());
+        response->set_on(request->on());
         logger()->Info("change the state of LED", With({{"new state", request->on()}}));
         return grpc::Status::OK;
     }
     catch (const std::exception &)
     {
-        return grpc::Status::CANCELLED;
         logger()->Error("failed to change led state");
+        return grpc::Status::CANCELLED;
     }
 }
 

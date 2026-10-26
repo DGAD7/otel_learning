@@ -43,7 +43,14 @@ int main()
     logger->Info("Hello OTEL");
     logger->Info("OTEL Version", opentelemetry::common::MakeAttributes({{"OTEL_VERSION", OPENTELEMETRY_VERSION}}));
 
-    const auto led = std::make_shared<led::led>();
+    constexpr int gpiochip = 0;
+    constexpr int gpioline = 17;
+    constexpr auto polarity = led::polarity_t::active_high;
+
+    const auto led = std::make_shared<led::led>(led::led_config{
+        .line = gpioline,
+        .chip = gpiochip,
+        .polarity = polarity});
 
     const auto led_controller_service = std::make_shared<led_control::led_control>(led);
 
