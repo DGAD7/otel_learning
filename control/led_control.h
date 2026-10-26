@@ -7,6 +7,7 @@
 #include "grpcpp/server_context.h"
 #include "grpcpp/support/status.h"
 
+#include <cstddef>
 #include <memory>
 
 namespace led_control
@@ -23,6 +24,7 @@ class led_control : public ledcontrol::LedControl::Service
 
     private:
         std::shared_ptr<led::led> m_led;
+        std::size_t m_toggle_count = 0;
 };
 
 } // namespace led_control

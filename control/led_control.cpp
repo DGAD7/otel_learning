@@ -42,6 +42,11 @@ grpc::Status led_control::SetLed(grpc::ServerContext *,
     {
         m_led->set_state(request->on());
         response->set_on(request->on());
+        if (request->on())
+        {
+            m_toggle_count++;
+        }
+        response->set_total_times_switch_on(m_toggle_count);
         logger()->Info("change the state of LED", With({{"new state", request->on()}}));
         return grpc::Status::OK;
     }
