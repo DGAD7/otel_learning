@@ -3,6 +3,8 @@ set(LIB telemetry)
 add_library(${LIB}
 	custom_exporter.cpp
 	logging.cpp
+	metrics.cpp
+	tracing.cpp
 )
 
 target_include_directories(${LIB}
@@ -21,4 +23,7 @@ PRIVATE
 
 	opentelemetry_trace
 	opentelemetry_exporter_otlp_grpc
+
+	opentelemetry_metrics
+	opentelemetry_exporter_otlp_grpc_metrics
 )

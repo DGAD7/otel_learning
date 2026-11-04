@@ -6,6 +6,8 @@
 #include "grpcpp/server_context.h"
 #include "grpcpp/support/status.h"
 #include "opentelemetry/logs/logger.h"
+#include "opentelemetry/logs/provider.h"
+#include "opentelemetry/metrics/provider.h"
 #include "opentelemetry/nostd/shared_ptr.h"
 #include "telemetry/logging.h"
 
@@ -32,6 +34,11 @@ namespace led_control
 led_control::led_control(std::shared_ptr<led::led> led)
     : m_led{std::move(led)}
 {
+    auto meter = opentelemetry::metrics::Provider::GetMeterProvider()->GetMeter("led_control");
+    m_switch_on_counter = meter->CreateUInt64Counter(
+        "led.switch_on",
+        "Number of times the LED was switched on",
+        "{switch}");
 }
 
 grpc::Status led_control::SetLed(grpc::ServerContext *,
@@ -45,6 +52,7 @@ grpc::Status led_control::SetLed(grpc::ServerContext *,
         if (request->on())
         {
             m_toggle_count++;
+            m_switch_on_counter->Add(1);
         }
         response->set_total_times_switch_on(m_toggle_count);
         logger()->Info("change the state of LED", With({{"new state", request->on()}}));

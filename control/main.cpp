@@ -6,6 +6,7 @@
 #include "opentelemetry/common/key_value_iterable_view.h"
 #include "opentelemetry/version.h"
 #include "telemetry/logging.h"
+#include "telemetry/metrics.h"
 
 #include <atomic>
 #include <chrono>
@@ -43,6 +44,8 @@ int main()
     logger->Info("Hello OTEL");
     logger->Info("OTEL Version", opentelemetry::common::MakeAttributes({{"OTEL_VERSION", OPENTELEMETRY_VERSION}}));
 
+    control::telemetry::init_metrics();
+
     constexpr int gpiochip = 0;
     constexpr int gpioline = 17;
     constexpr auto polarity = led::polarity_t::active_high;
@@ -76,6 +79,9 @@ int main()
 
     grpc_shutdown_requested.store(true);
     shutdown_watcher.join();
+
+    control::telemetry::shutdown_logging();
+    control::telemetry::shutdown_metrics();
 
     return 0;
 }
