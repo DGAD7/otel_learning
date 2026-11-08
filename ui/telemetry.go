@@ -11,6 +11,7 @@ import (
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	sdklog "go.opentelemetry.io/otel/sdk/log"
@@ -54,20 +55,27 @@ func getLogger(name string) *slog.Logger {
 
 func initLogging(ctx context.Context) (func(context.Context) error, error) {
 
-	exporter := lineExporter{w: os.Stdout}
-
 	res, err := resource.New(ctx,
 		resource.WithTelemetrySDK(),
-		resource.WithAttributes(attribute.String("service.name", "led-ui")),
+		resource.WithAttributes(attribute.String("service.name", "led-ui-go")),
 	)
 	if err != nil {
 		return nil, err
 	}
-
-	provider := sdklog.NewLoggerProvider(
-		sdklog.WithProcessor(sdklog.NewSimpleProcessor(exporter)),
+	opts := []sdklog.LoggerProviderOption{
+		sdklog.WithProcessor(sdklog.NewSimpleProcessor(lineExporter{w: os.Stdout})),
 		sdklog.WithResource(res),
-	)
+	}
+
+	if os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT") != "" {
+		otlpExporter, err := otlploggrpc.New(ctx, otlploggrpc.WithInsecure())
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, sdklog.WithProcessor(sdklog.NewBatchProcessor(otlpExporter)))
+	}
+
+	provider := sdklog.NewLoggerProvider(opts...)
 
 	otel.SetLoggerProvider(provider)
 

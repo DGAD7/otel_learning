@@ -46,7 +46,7 @@ void init_tracing()
     auto exporter = otlp::OtlpGrpcExporterFactory::Create(options);
     auto processor = trace_sdk::BatchSpanProcessorFactory::Create(std::move(exporter), trace_sdk::BatchSpanProcessorOptions{});
 
-    auto resource = opentelemetry::sdk::resource::Resource::Create({{"service.name", "led-control"}});
+    auto resource = opentelemetry::sdk::resource::Resource::Create({{"service.name", "led-control-cpp"}});
     g_provider = trace_sdk::TracerProviderFactory::Create(std::move(processor), resource);
 
     std::shared_ptr<trace_api::TracerProvider> api_provider = g_provider;
