@@ -7,6 +7,7 @@
 #include "opentelemetry/version.h"
 #include "telemetry/logging.h"
 #include "telemetry/metrics.h"
+#include "telemetry/tracing.h"
 
 #include <atomic>
 #include <chrono>
@@ -45,6 +46,7 @@ int main()
     logger->Info("OTEL Version", opentelemetry::common::MakeAttributes({{"OTEL_VERSION", OPENTELEMETRY_VERSION}}));
 
     control::telemetry::init_metrics();
+    control::telemetry::init_tracing();
 
     constexpr int gpiochip = 0;
     constexpr int gpioline = 17;
@@ -82,6 +84,7 @@ int main()
 
     control::telemetry::shutdown_logging();
     control::telemetry::shutdown_metrics();
+    control::telemetry::shutdown_tracing();
 
     return 0;
 }
