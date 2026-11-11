@@ -20,5 +20,5 @@ search for packages in https://pkg.go.dev
 * More about Golang in this [link](https://go.dev/)
 
 ### OpenTelemetry SDK
-Read more about setting up OTEL for Golan in the link below
+Read more about setting up OTEL for Golang in the link below
 https://opentelemetry.io/docs/languages/go/getting-started/
