@@ -2,6 +2,7 @@
 #include "telemetry/custom_exporter.h"
 #include "telemetry/otlp.h"
 
+#include "opentelemetry/exporters/ostream/log_record_exporter.h"
 #include "opentelemetry/exporters/otlp/otlp_grpc_log_record_exporter_factory.h"
 #include "opentelemetry/exporters/otlp/otlp_grpc_log_record_exporter_options.h"
 #include "opentelemetry/logs/logger_provider.h"
@@ -17,6 +18,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -38,7 +40,15 @@ void init_logging()
 
     std::vector<std::unique_ptr<logs_sdk::LogRecordProcessor>> processors;
 
-    processors.push_back(logs_sdk::SimpleLogRecordProcessorFactory::Create(std::make_unique<custom_exporter>(std::cout)));
+    const char* format = std::getenv("LOG_CONSOLE_FORMAT");
+    if (format != nullptr && std::string_view(format) == "builtin")
+    {
+        processors.push_back(logs_sdk::SimpleLogRecordProcessorFactory::Create(std::make_unique<opentelemetry::exporter::logs::OStreamLogRecordExporter>(std::cout)));
+    }
+    else
+    {
+        processors.push_back(logs_sdk::SimpleLogRecordProcessorFactory::Create(std::make_unique<custom_exporter>(std::cout)));
+    }
 
     if (otlp_enabled())
     {
