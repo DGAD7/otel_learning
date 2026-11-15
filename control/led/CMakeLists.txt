@@ -11,5 +11,5 @@ option(LED_SIMULATED "Print LED changes instead of using GPIO" ${LED_SIMULATED_D
 if(LED_SIMULATED)
 	add_library(${LIB} led_simulated.cpp)
 else()
-	add_library(${LIB} led_gpio.cpp)
+	add_library(${LIB} led.cpp)
 endif()
