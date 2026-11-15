@@ -22,13 +22,13 @@ brew install colima (macos)
 ## Architecture
 
 ```
- sources                 pipeline                  backends                 frontend
-┌──────────────┐      ┌───────────────┐      ┌──────────────────┐      ┌───────────┐
-│ led_control  │      │ agent (Pi)    │      │ Loki   (logs)    │      │           │
-│ UI (Go)      │ ───► │ gateway (Mac) │ ───► │ Tempo  (traces)  │ ◄─── │  Grafana  │ ◄── browser
-└──────────────┘      └───────────────┘      │ Mimir  (metrics) │      │           │
-  produce data          carry & route        └──────────────────┘      └───────────┘
-                                               store & answer queries    show data
+ sources                      pipeline               backends              frontend
+┌───────────────────┐     ┌───────────────┐     ┌──────────────────┐     ┌───────────┐
+│ led_control (C++) │     │ agent (Pi)    │     │ Loki   (logs)    │     │           │
+│ UI (Go)           │ --> │ gateway (Mac) │ --> │ Tempo  (traces)  │ <-- │  Grafana  │ <-- browser
+│                   │     │               │     │ Mimir  (metrics) │     │           │
+└───────────────────┘     └───────────────┘     └──────────────────┘     └───────────┘
+    produce data            carry & route      store & answer queries      show data
 ```
 
 | Role | Components | Job |
@@ -44,8 +44,22 @@ Because each role only talks to its neighbours, a backend can be replaced (for e
 
 See the [collector README](collector/README.md) for ports, configuration and versions.
 
+## Adoption
+
+**Industry:** OpenTelemetry is the de facto standard for telemetry in web and cloud services, and one of the most active CNCF projects after Kubernetes. Major clouds (AWS, Google Cloud, Azure) and observability vendors (Datadog, Grafana, Dynatrace, New Relic, Elastic, Splunk) accept OTLP, so code is instrumented once and the backend can change.
+
+**Embedded Software Industry:** still early.
+
+- **Embedded Linux** (Yocto, Raspberry Pi): works with the C++ SDK and a collector agent, as in this project.
+- **Microcontrollers / RTOS:** no official SDK. Devices send data to a gateway that converts it to OTLP.
+
+Interest is growing in IoT and automotive, but tooling and examples are limited.
+
 ## Components
 - [UI (Go)](ui/README.md)
 - [Controller (C++)](control/README.md)
+- [Telemetry (C++)](control/telemetry/README.md)
 - [Collector](collector/README.md)
+- [Performance](performance/README.md)
+- [Requirements](requirements/README.md)
 

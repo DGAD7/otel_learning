@@ -14,6 +14,10 @@ FetchContent_Declare(opentelemetry-cpp
 FetchContent_MakeAvailable(opentelemetry-cpp)
 ```
 
+### Why OTLP over gRPC, not HTTP
+
+OTLP can be sent over gRPC (port 4317) or HTTP (port 4318); the data is the same. gRPC was chosen because `led_control` already links gRPC for its LED service, so it adds no new dependency. The HTTP exporter would need libcurl as well. HTTP is the better choice when telemetry must pass proxies or firewalls, or is sent from a browser.
+
 [CMakeLists.txt](CMakeLists.txt) builds a `telemetry` library:
 
 ```cmake
