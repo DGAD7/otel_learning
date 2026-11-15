@@ -3,12 +3,14 @@ services:
     image: otel/opentelemetry-collector-contrib:0.164.0
     restart: unless-stopped
     volumes:
-      - ./otel-collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - ./gateway/config.yaml:/etc/otelcol-contrib/config.yaml:ro
     ports:
       - "4317:4317"
       - "4318:4318"
     depends_on:
       - loki
+      - mimir
+      - tempo
 
   loki:
     image: grafana/loki:3.5.0
