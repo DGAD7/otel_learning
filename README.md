@@ -22,19 +22,20 @@ brew install colima (macos)
 ## Architecture
 
 ```
- sources                      pipeline               backends              frontend
-┌───────────────────┐     ┌───────────────┐     ┌──────────────────┐     ┌───────────┐
-│ led_control (C++) │     │ agent (Pi)    │     │ Loki   (logs)    │     │           │
-│ UI (Go)           │ --> │ gateway (Mac) │ --> │ Tempo  (traces)  │ <-- │  Grafana  │ <-- browser
-│                   │     │               │     │ Mimir  (metrics) │     │           │
-└───────────────────┘     └───────────────┘     └──────────────────┘     └───────────┘
-    produce data            carry & route      store & answer queries      show data
+ sources                                    pipeline                            backends              frontend
+┌───────────────────┐     ┌──────────────────┐     ┌─────────────────┐     ┌──────────────────┐     ┌───────────┐
+│ led_control (C++) │ --> │ target collector │ --> │ gateway         │     │ Loki   (logs)    │     │           │
+└───────────────────┘     │ (agent, Pi)      │     │ collector (Mac) │ --> │ Tempo  (traces)  │ <-- │  Grafana  │ <-- browser
+┌───────────────────┐     └──────────────────┘     │                 │     │ Mimir  (metrics) │     │           │
+│ UI (Go)           │ ---------------------------> │                 │     │                  │     │           │
+└───────────────────┘                              └─────────────────┘     └──────────────────┘     └───────────┘
+    produce data                         carry & route                    store & answer queries      show data
 ```
 
 | Role | Components | Job |
 |---|---|---|
 | Sources | `led_control` (C++), UI (Go) | Produce logs, traces and metrics through the OpenTelemetry SDKs |
-| Pipeline | Agent collector on the target, gateway collector on the development machine | Receive, enrich, batch and route telemetry. They neither store nor display it. |
+| Pipeline | Target collector (agent) on the Pi, gateway collector on the development machine | Receive, enrich, batch and route telemetry. They neither store nor display it. |
 | Backends | Loki, Tempo, Mimir | Store telemetry and answer queries (LogQL, TraceQL, PromQL) |
 | Frontend | Grafana | Displays telemetry. It stores none itself; it queries the backends through its data sources. |
 

@@ -1,6 +1,7 @@
 # Collector and observability backend
 
 Telemetry from both applications goes through two OpenTelemetry Collectors before reaching the storage backends and Grafana.
+Link to collector [page](https://opentelemetry.io/docs/collector/)
 
 ```
  Raspberry Pi (target)                          Development machine (Docker Compose)
@@ -42,6 +43,12 @@ Use the **same collector version** on the target and the gateway, so both interp
 | [grafana/datasources.yaml](grafana/datasources.yaml) | Grafana | Data sources for Loki, Mimir and Tempo (provisioned at startup) |
 
 Loki uses the default configuration shipped in its image.
+
+* All configuration details can be found in the [open-telemetry config section](https://github.com/open-telemetry/opentelemetry-collector/tree/main/config)
+* Receiver info [here](https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver/otlpreceiver)
+* Info about processors [here](https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/memorylimiterprocessor)
+* Exporter info [here](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlpexporter)
+* Example [config](https://opentelemetry.io/docs/collector/configuration/)
 
 ---
 
@@ -201,9 +208,32 @@ Example queries in **Explore**:
 | Tempo | `{ resource.service.name = "led-ui" }` | Traces started by the UI |
 | Tempo | `{ span.rpc.system = "grpc" }` | All gRPC client and server spans |
 
+### Persistence
+
+Loki, Mimir and Tempo store data inside their containers, with no volumes:
+
+| Command | Data |
+|---|---|
+| `docker compose stop` / `start`, Mac or Colima restart | Kept |
+| `docker compose down`, `--force-recreate`, image update | **Lost** |
+
+To keep data, mount a named volume at each backend's storage path, for example Tempo:
+
+```yaml
+  tempo:
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - tempo-data:/tmp/tempo
+
+volumes:
+  tempo-data:
+```
+
+`docker compose down -v` deletes the volumes too.
+
 ### Applying changes
 
-- **A mounted config file changed** (`otel-collector.yaml`, `mimir.yaml`, `tempo.yaml`, `datasources.yaml`): Compose does not detect changes inside mounted files.
+- **A mounted config file changed** (`gateway/config.yaml`, `mimir.yaml`, `tempo.yaml`, `datasources.yaml`): Compose does not detect changes inside mounted files.
 - **`compose.yaml` changed:** run 
 ```
 docker compose down
