@@ -42,8 +42,8 @@ void init_metrics()
     auto exporter = otlp::OtlpGrpcMetricExporterFactory::Create(exporter_options);
 
     metrics_sdk::PeriodicExportingMetricReaderOptions reader_options;
-    reader_options.export_interval_millis = std::chrono::milliseconds(10000);
-    reader_options.export_timeout_millis = std::chrono::milliseconds(5000);
+    reader_options.export_interval_millis = std::chrono::milliseconds(2000);
+    reader_options.export_timeout_millis = std::chrono::milliseconds(1000);
     auto reader = metrics_sdk::PeriodicExportingMetricReaderFactory::Create(std::move(exporter), reader_options);
 
     auto resource = opentelemetry::sdk::resource::Resource::Create({{"service.name", "led-control"}});

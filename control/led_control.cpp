@@ -9,15 +9,19 @@
 #include "opentelemetry/context/propagation/text_map_propagator.h"
 #include "opentelemetry/context/runtime_context.h"
 #include "opentelemetry/logs/logger.h"
+#include "opentelemetry/metrics/async_instruments.h"
+#include "opentelemetry/metrics/observer_result.h"
 #include "opentelemetry/metrics/provider.h"
 #include "opentelemetry/nostd/shared_ptr.h"
 #include "opentelemetry/nostd/string_view.h"
+#include "opentelemetry/nostd/variant.h"
 #include "opentelemetry/trace/context.h"
 #include "opentelemetry/trace/span_metadata.h"
 #include "opentelemetry/trace/span_startoptions.h"
 #include "telemetry/logging.h"
 #include "telemetry/tracing.h"
 
+#include <cstdint>
 #include <exception>
 #include <grpcpp/support/status.h>
 #include <grpcpp/support/string_ref.h>
@@ -106,6 +110,7 @@ grpc::Status led_control::SetLed(grpc::ServerContext *context,
             m_toggle_count++;
             m_switch_on_counter->Add(1);
         }
+        m_led_state.store(request->on());
         response->set_total_times_switch_on(m_toggle_count);
         logger()->Info("change the state of LED", With({{"new state", request->on()}}));
         span->End();

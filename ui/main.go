@@ -82,7 +82,7 @@ func main() {
 
 	led = newLedButton(func() {
 
-		tapCtx, span := tracer.Start(ctx, "let button tap")
+		tapCtx, span := tracer.Start(ctx, "led button tap")
 		defer span.End()
 
 		requestedState := !ledOn
